@@ -1,0 +1,312 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+/* ===== Design Tokens ===== */
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-hover: rgba(255, 255, 255, 0.08);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-tertiary: rgba(255, 255, 255, 0.3);
+  --btn-primary-bg: #ffffff;
+  --btn-primary-text: #000000;
+  --btn-primary-hover: #cfcfcf;
+  --btn-ghost-bg: rgba(255, 255, 255, 0.2);
+  --btn-ghost-hover: rgba(157, 157, 157, 0.2);
+  --divider: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+}
+
+/* ===== Font Imports ===== */
+/* Fonts loaded via @import at top of file */
+
+/* ===== Global Reset ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  line-height: 1;
+  overflow-x: hidden;
+}
+
+/* ===== Typography ===== */
+.font-serif {
+  font-family: 'Instrument Serif', serif;
+}
+
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* ===== Glass Effect ===== */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-hover:hover {
+  background: var(--bg-card-hover);
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 300ms ease;
+  height: 48px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary:hover {
+  background: var(--btn-primary-hover);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: var(--btn-ghost-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 300ms ease;
+  height: 48px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-ghost:hover {
+  background: var(--btn-ghost-hover);
+}
+
+/* ===== Arrow Icon ===== */
+.arrow-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 200ms ease;
+}
+.btn-primary:hover .arrow-icon,
+.btn-ghost:hover .arrow-icon {
+  transform: translateX(3px);
+}
+
+/* ===== Section Label ===== */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--text-primary);
+  opacity: 0.2;
+}
+
+/* ===== Scroll Fade In ===== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Loading Screen ===== */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+#loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spinner-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top-color: rgba(255, 255, 255, 0.8);
+  animation: spin 1.9s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Copy Email ===== */
+.copy-email {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  position: relative;
+  transition: color 0.2s ease;
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+}
+.copy-email:hover { color: rgba(255, 255, 255, 1); }
+
+.copy-email__underline {
+  position: absolute;
+  left: 0;
+  bottom: -0.1em;
+  height: 1px;
+  background: #fff;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+.copy-email:hover .copy-email__underline { transform: scaleX(1); }
+
+.copy-email__tooltip {
+  opacity: 0;
+  transform: translateX(-4px) translateY(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+  pointer-events: none;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: rgba(140, 140, 140, 0.4);
+  backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.95);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+.copy-email[data-copied="true"] .copy-email__tooltip {
+  opacity: 1;
+  transform: translateX(0) translateY(-6px);
+}
+
+@media (max-width: 640px) {
+  .copy-email {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    font-size: 24px;
+  }
+}
+
+/* ===== Client Logo ===== */
+.client-card {
+  width: 100%;
+  display: flex;
+  padding: 32px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(10px);
+  height: 200px;
+  transition: all 300ms ease;
+}
+.client-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.client-logo {
+  width: 140px;
+  opacity: 0.4;
+  transition: opacity 300ms ease;
+  filter: brightness(0) invert(1);
+}
+.client-card:hover .client-logo {
+  opacity: 0.7;
+}
+
+/* ===== Pricing Card ===== */
+.pricing-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  transition: all 300ms ease;
+}
+.pricing-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.pricing-card.featured {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .container { padding: 0 20px; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 20px; }
+}
