@@ -11,10 +11,11 @@ export default function FadeInProvider({
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
+      (entries, obs) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("visible");
+            obs.unobserve(entry.target);
           }
         });
       },
