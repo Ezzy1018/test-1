@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useMemo, useCallback } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useRef, useMemo, useCallback, memo } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Environment,
   Float,
@@ -46,8 +46,16 @@ function CameraRig({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ── Constants for Geometries and Materials ──────────── */
+const TORUS_KNOT_GEO = new THREE.TorusKnotGeometry(1, 0.28, 128, 16, 2, 3);
+const TORUS_GEO = new THREE.TorusGeometry(0.4, 0.12, 32, 64);
+const SPHERE_GEO = new THREE.SphereGeometry(0.5, 64, 64);
+const RING_GEO = new THREE.RingGeometry(0.8, 1, 64);
+const PLANE_GEO = new THREE.PlaneGeometry(60, 60);
+const BG_PLANE_GEO = new THREE.PlaneGeometry(35, 20);
+
 /* ── Animated Torus Knot ──────────────────────────────── */
-function SpiralModel({
+const SpiralModel = memo(function SpiralModel({
   position,
   scale,
   speed,
@@ -67,23 +75,32 @@ function SpiralModel({
     }
   });
 
+  const material = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color,
+        metalness: 1,
+        roughness: 0.25,
+        envMapIntensity: 0.6,
+      }),
+    [color]
+  );
+
   return (
     <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.4}>
-      <mesh ref={ref} position={position} scale={scale}>
-        <torusKnotGeometry args={[1, 0.28, 128, 16, 2, 3]} />
-        <meshStandardMaterial
-          color={color}
-          metalness={1}
-          roughness={0.25}
-          envMapIntensity={0.6}
-        />
-      </mesh>
+      <mesh
+        ref={ref}
+        position={position}
+        scale={scale}
+        geometry={TORUS_KNOT_GEO}
+        material={material}
+      />
     </Float>
   );
-}
+});
 
 /* ── Smaller decorative torus ────────────────────────── */
-function SmallTorus({
+const SmallTorus = memo(function SmallTorus({
   position,
   speed,
 }: {
@@ -99,23 +116,35 @@ function SmallTorus({
     }
   });
 
+  const material = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#5a5a5a",
+        metalness: 0.9,
+        roughness: 0.3,
+        envMapIntensity: 0.4,
+      }),
+    []
+  );
+
   return (
     <Float speed={2} rotationIntensity={0.4} floatIntensity={0.6}>
-      <mesh ref={ref} position={position}>
-        <torusGeometry args={[0.4, 0.12, 32, 64]} />
-        <meshStandardMaterial
-          color="#5a5a5a"
-          metalness={0.9}
-          roughness={0.3}
-          envMapIntensity={0.4}
-        />
-      </mesh>
+      <mesh
+        ref={ref}
+        position={position}
+        geometry={TORUS_GEO}
+        material={material}
+      />
     </Float>
   );
-}
+});
 
 /* ── Reflective Sphere ───────────────────────────────── */
-function ReflectiveSphere({ position }: { position: [number, number, number] }) {
+const ReflectiveSphere = memo(function ReflectiveSphere({
+  position,
+}: {
+  position: [number, number, number];
+}) {
   const ref = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
@@ -124,25 +153,37 @@ function ReflectiveSphere({ position }: { position: [number, number, number] }) 
     }
   });
 
+  const material = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#8d8d8d",
+        metalness: 1,
+        roughness: 0.35,
+        envMapIntensity: 0.3,
+        clearcoat: 0.5,
+        clearcoatRoughness: 0.15,
+      }),
+    []
+  );
+
   return (
     <Float speed={0.8} rotationIntensity={0} floatIntensity={0.3}>
-      <mesh ref={ref} position={position}>
-        <sphereGeometry args={[0.5, 64, 64]} />
-        <meshPhysicalMaterial
-          color="#8d8d8d"
-          metalness={1}
-          roughness={0.35}
-          envMapIntensity={0.3}
-          clearcoat={0.5}
-          clearcoatRoughness={0.15}
-        />
-      </mesh>
+      <mesh
+        ref={ref}
+        position={position}
+        geometry={SPHERE_GEO}
+        material={material}
+      />
     </Float>
   );
-}
+});
 
 /* ── Floating ring particles ────────────────────────── */
-function FloatingRings({ count = 6 }: { count?: number }) {
+const FloatingRings = memo(function FloatingRings({
+  count = 6,
+}: {
+  count?: number;
+}) {
   const rings = useMemo(() => {
     return Array.from({ length: count }, (_, i) => ({
       position: [
@@ -160,32 +201,49 @@ function FloatingRings({ count = 6 }: { count?: number }) {
     }));
   }, [count]);
 
+  const material = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#4a4a4a",
+        metalness: 0.8,
+        roughness: 0.4,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.6,
+      }),
+    []
+  );
+
   return (
     <>
       {rings.map((ring, i) => (
-        <Float key={i} speed={ring.speed} rotationIntensity={0.5} floatIntensity={0.3}>
-          <mesh position={ring.position} rotation={ring.rotation} scale={ring.scale}>
-            <ringGeometry args={[0.8, 1, 64]} />
-            <meshStandardMaterial
-              color="#4a4a4a"
-              metalness={0.8}
-              roughness={0.4}
-              side={THREE.DoubleSide}
-              transparent
-              opacity={0.6}
-            />
-          </mesh>
+        <Float
+          key={i}
+          speed={ring.speed}
+          rotationIntensity={0.5}
+          floatIntensity={0.3}
+        >
+          <mesh
+            position={ring.position}
+            rotation={ring.rotation}
+            scale={ring.scale}
+            geometry={RING_GEO}
+            material={material}
+          />
         </Float>
       ))}
     </>
   );
-}
+});
 
 /* ── Ground plane with reflection ───────────────────── */
-function ReflectiveFloor() {
+const ReflectiveFloor = memo(function ReflectiveFloor() {
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.5, 0]}>
-      <planeGeometry args={[60, 60]} />
+    <mesh
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, -3.5, 0]}
+      geometry={PLANE_GEO}
+    >
       <MeshReflectorMaterial
         blur={[300, 100]}
         resolution={1024}
@@ -200,7 +258,7 @@ function ReflectiveFloor() {
       />
     </mesh>
   );
-}
+});
 
 /* ── Moving spotlights ──────────────────────────────── */
 function MovingSpotlight({
@@ -247,8 +305,7 @@ function Scene() {
       <MovingSpotlight offset={Math.PI / 2} color="#e8e0ff" />
 
       {/* Background */}
-      <mesh position={[0, 0, -12]}>
-        <planeGeometry args={[35, 20]} />
+      <mesh position={[0, 0, -12]} geometry={BG_PLANE_GEO}>
         <meshStandardMaterial color="#111111" roughness={0.7} metalness={0.3} />
       </mesh>
 
